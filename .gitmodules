@@ -7,3 +7,12 @@
 [submodule "analysis/analysis/mat_gemini-scripts"]
 	path = analysis/analysis/mat_gemini-scripts
 	url = https://github.com/gemini3d/mat_gemini-scripts.git
+[submodule "analysis/gemini3d"]
+	path = analysis/gemini3d
+	url = https://github.com/gemini3d/gemini3d.git
+[submodule "analysis/mat_gemini-scripts"]
+	path = analysis/mat_gemini-scripts
+	url = https://github.com/gemini3d/mat_gemini-scripts.git
+[submodule "analysis/mat_gemini"]
+	path = analysis/mat_gemini
+	url = https://github.com/gemini3d/mat_gemini.git
