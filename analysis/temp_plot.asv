@@ -1,7 +1,19 @@
-function temp_plot(direc,plotdirec)
+function temp_plot(direc,opts)
 arguments
 	direc (1,:) char {mustBeFolder}
-    plotdirec (1,:) char {mustBeFolder}
+	opts.plots (1,:) string = 'all'
+	opts.start (1,1) double {mustBeNonempty} = -1
+	opts.cad (1,1) double {mustBeNonempty} = -1
+	opts.stop (1,1) double {mustBeNonempty} = -1
+	opts.alt_ref (1,1) double {mustBePositive} = 300e3
+	opts.mlon_ref (1,1) double {mustBeNonempty} = -1
+	opts.hsv_sat (1,1) double {mustBeNonempty} = 1e3
+	opts.j_range (1,2) double {mustBeNonempty} = [-2e-6,2e-6]
+	opts.n_range (1,2) double {mustBeNonempty} = [1e9,1e12]
+	opts.p_range (1,2) double {mustBeNonempty} = [-3e3,3e3]
+	opts.alt_max (1,1) double {mustBeNonempty} = 400e3
+	opts.alt_hsv (1,1) double {mustBeNonempty} = 150e3
+	opts.alt_cls (1,1) double {mustBeNonempty} = 120e3
 end
 
 colorcet = @aurogem.tools.colorcet;
@@ -60,14 +72,14 @@ params.msis_outfile="tmp/msis_output.h5";
 natm=gemini3d.model.msis(params,xg,TOI);
 Tn=natm.Tn;
 time = datetime(ymd) + seconds(UTsec);
-time.Format = 'yyyyMMdd''T''HHmmss.SSS';
+time.format = 'yyyyMMdd' 'T' 'HHmmss.sss';
 dat = gemini3d.read.frame(direc,'time',time);
 %title_tile = char(dat.time);
 
 phi = dat.Phitop;
 [E1,E2,E3] = gemscr.postprocess.pot2field(xg,phi);
 
-E0_UTsecs = UTsec0 + (0:dtE0:tdur);
+E0_UTsecs = UTsecs = UTsec0 + (0:dTE0:tdur);
 [~,E0_i] = min(abs(E0_UTsecs-UTsec));
 E0_time = datetime(ymd) + seconds(E0_UTsecs(E0_i));
 E0_fn = fullfile(direc,cfg.E0_dir,[char(gemini3d.datelab(E0_time)),'.h5']);
