@@ -10,9 +10,7 @@ https://github.com/317Lab/gemini3d/blob/main/Readme.md
 
 ## Installation 
 ```sh
-git clone https://github.com/charlesracomb-dartmouth/phys118-final-project.git
-git submodule init
-git submodule update
+git clone --recursive-submodules https://github.com/charlesracomb-dartmouth/phys118-final-project.git
 ```
 
 From the analysis/gemini3d directory

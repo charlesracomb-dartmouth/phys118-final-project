@@ -5,7 +5,7 @@ arguments
 end
 
 colorcet = @aurogem.tools.colorcet;
-
+alt_max = 400e3;
 unt.x = 'km'; unt.t = 'eV';
 scl.x = 1e-3; scl.t = 8.62e-5;
 
