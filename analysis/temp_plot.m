@@ -8,7 +8,8 @@ colorcet = @aurogem.tools.colorcet;
 alt_max = 400e3;
 unt.x = 'km'; unt.t = 'eV';
 scl.x = 1e-3; scl.t = 8.62e-5;
-
+clm.t = 'L3';
+[~,runname] = fileparts(direc);
 fts = 8;
 ftn = 'Consolas';
 clb_fmt = '%+ 6.2f';
@@ -17,8 +18,10 @@ mlon_label = 'Mag. Lon.';
 mlat_label = 'Mag. Lat.';
 alt_label = ['Alt. [',unt.x,']'];
 
+
 %%load in grid data
 xg = gemini3d.read.grid(direc);
+xg.lx = double(xg.lx);
 MLAT = 90-squeeze(xg.theta)*180/pi;
 MLON = squeeze(xg.phi)*180/pi;
 ALT = xg.alt;
@@ -59,14 +62,17 @@ params.msis_infile="tmp/msis_input.h5";
 params.msis_outfile="tmp/msis_output.h5";
 natm=gemini3d.model.msis(params,xg,TOI);
 Tn=natm.Tn;
+Tn=Tn(lb1:ub1,lb2:ub2,lb3:ub3);
 time = datetime(ymd) + seconds(UTsec);
 time.Format = 'yyyyMMdd''T''HHmmss.SSS';
 dat = gemini3d.read.frame(direc,'time',time);
+title_time = char(dat.time);
+plot_title = [runname,' at ',title_time,' UT'];
 %title_tile = char(dat.time);
 
 phi = dat.Phitop;
 [E1,E2,E3] = gemscr.postprocess.pot2field(xg,phi);
-
+dtE0 = cfg.dtE0;
 E0_UTsecs = UTsec0 + (0:dtE0:tdur);
 [~,E0_i] = min(abs(E0_UTsecs-UTsec));
 E0_time = datetime(ymd) + seconds(E0_UTsecs(E0_i));
@@ -82,13 +88,21 @@ E3 = E3(lb1:ub1,lb2:ub2,lb3:ub3);
 Emag = sqrt(E1.^2 + E2.^2 + E3.^2);
 Te = dat.Te(lb1:ub1,lb2:ub2,lb3:ub3);
 Ti = dat.Ti(lb1:ub1,lb2:ub2,lb3:ub3);
+size(Tn)
+size(Emag)
 Ti_schunk = Tn + 0.33*Emag.^2;
 ALT_p = ALT*scl.x;
+alt_ref = 300e3;
+[~,alt_rid] = min(abs(ALT(:,1,1)-alt_ref));
+alt_rac = ALT(alt_rid,1,1);
 alt_rac_p = round(alt_rac*scl.x);
 mlon_rac = MLON(1,mlon_rid,1);
 mlon_rac_p = round(mlon_rac);
 Te_p = Te*scl.t; Ti_p = Ti*scl.t; Ti_schunk_p = Ti_schunk*scl.t;
 
+buf = 1.05;
+qnt = 0.99;
+Ti_range_p = buf*[quantile(Ti_p(:),1-qnt),quantile(Ti_p(:),qnt)];
 
 folder = 'temperature';
 suffix = 'temp';
@@ -100,18 +114,20 @@ title(tlo,plot_title,'FontSize',fts,'FontName',ftn,'FontWeight','bold','Interpre
 
 nexttile
 pcolor(squeeze(MLAT(:,mlon_rid,:)),squeeze(ALT_p(:,mlon_rid,:)),squeeze(Ti_schunk_p(:,mlon_rid,:)))
+shading flat
 title(['Schunk Temp. (',num2str(mlon_rac_p),'°)'])
 xlabel(mlat_label)
 ylabel(alt_label)
-colormap(gca.colorcet(clm.t))
+colormap(gca,colorcet(clm.t))
 clb = colorbar;
 clb.Label.String = ['T_i [',unt.t,']'];
 clb.Ruler.Exponent = clb_exp;
-clim(Te_range_p)
+clim(Ti_range_p)
 yline(alt_rac_p,'r--')
 
 nexttile
 pcolor(squeeze(MLON(alt_rid,:,:)),squeeze(MLAT(alt_rid,:,:)),squeeze(Ti_schunk_p(alt_rid,:,:)))
+shading flat
 title(['Schunk Temp. (',num2str(alt_rac_p),' ',unt.x,')'])
 xlabel(mlon_label)
 ylabel(mlat_label)
@@ -119,11 +135,12 @@ colormap(gca,colorcet(clm.t))
 clb = colorbar;
 clb.Label.String = ['T_i [',unt.t,']'];
 clb.Ruler.Exponent = clb_exp;
-clim(Te_range_p)
+clim(Ti_range_p)
 xline(mlon_rac_p,'r--')
 
 nexttile
 pcolor(squeeze(MLAT(:,mlon_rid,:)),squeeze(ALT_p(:,mlon_rid,:)),squeeze(Ti_p(:,mlon_rid,:)))
+shading flat
 title(['Ion Temp. (',num2str(mlon_rac_p),'°)'])
 xlabel(mlat_label)
 ylabel(alt_label)
@@ -137,6 +154,7 @@ yline(alt_rac_p,'r--')
 
 nexttile
 pcolor(squeeze(MLON(alt_rid,:,:)),squeeze(MLAT(alt_rid,:,:)),squeeze(Ti_p(alt_rid,:,:)))
+shading flat
 title(['Ion Temp. (',num2str(alt_rac_p),' ',unt.x,')'])
 xlabel(mlon_label)
 ylabel(mlat_label)
@@ -151,6 +169,8 @@ xline(mlon_rac_p,'r--')
 if ~exist(fullfile(plotdirec,'plots',folder),'dir')
 	mkdir(plotdirec,fullfile('plots',folder));
 end
+filename_prefix = char(gemini3d.datelab(time));
+suffix = 'temp';
 filename = fullfile(plotdirec,'plots',folder,[filename_prefix,'_',suffix,'.png']);
 saveas(gcf,filename)
 close all
