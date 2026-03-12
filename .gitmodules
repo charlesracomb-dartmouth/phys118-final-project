@@ -16,3 +16,6 @@
 [submodule "analysis/mat_gemini"]
 	path = analysis/mat_gemini
 	url = https://github.com/gemini3d/mat_gemini.git
+[submodule "analysis/aurora_gemini"]
+	path = analysis/aurora_gemini
+	url = https://github.com/317Lab/aurora_gemini.git
