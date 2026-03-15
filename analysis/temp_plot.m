@@ -8,7 +8,7 @@ colorcet = @aurogem.tools.colorcet;
 alt_max = 400e3;
 unt.x = 'km'; unt.t = 'eV';
 scl.x = 1e-3; scl.t = 8.62e-5;
-clm.t = 'L3';
+clm.t = 'L3'; clm.n = 'L9';
 [~,runname] = fileparts(direc);
 fts = 8;
 ftn = 'Consolas';
@@ -88,8 +88,8 @@ E3 = E3(lb1:ub1,lb2:ub2,lb3:ub3);
 Emag = sqrt(E1.^2 + E2.^2 + E3.^2);
 Te = dat.Te(lb1:ub1,lb2:ub2,lb3:ub3);
 Ti = dat.Ti(lb1:ub1,lb2:ub2,lb3:ub3);
-size(Tn)
-size(Emag)
+%size(Tn)
+%size(Emag)
 Ti_schunk = Tn + 0.33*Emag.^2;
 ALT_p = ALT*scl.x;
 alt_ref = 300e3;
@@ -171,6 +171,117 @@ if ~exist(fullfile(plotdirec,'plots',folder),'dir')
 end
 filename_prefix = char(gemini3d.datelab(time));
 suffix = 'temp';
+filename = fullfile(plotdirec,'plots',folder,[filename_prefix,'_',suffix,'.png']);
+saveas(gcf,filename)
+close all
+
+figure
+set(gcf,'PaperPosition',[0,0,6.5,4.5])
+tlo = tiledlayout(2,1);
+title(tlo,plot_title,'FontSize',fts,'FontName',ftn,'FontWeight','bold','Interpreter','none')
+
+nexttile
+pcolor(squeeze(MLAT(:,mlon_rid,:)),squeeze(ALT_p(:,mlon_rid,:)),squeeze(Ti_schunk_p(:,mlon_rid,:) - Ti_p(:,mlon_rid,:)))
+shading flat
+title(['Temp Difference (',num2str(mlon_rac_p),'°)'])
+xlabel(mlat_label)
+ylabel(alt_label)
+colormap(gca,colorcet(clm.t))
+clb = colorbar;
+clb.Label.String = ['T_i [',unt.t,']'];
+clb.Ruler.Exponent = clb_exp;
+clim(Ti_range_p)
+yline(alt_rac_p,'r--')
+
+nexttile
+pcolor(squeeze(MLON(alt_rid,:,:)),squeeze(MLAT(alt_rid,:,:)),squeeze(Ti_schunk_p(alt_rid,:,:) - Ti_p(alt_rid,:,:)))
+shading flat
+title(['Temp Difference (',num2str(alt_rac_p),' ',unt.x,')'])
+xlabel(mlon_label)
+ylabel(mlat_label)
+colormap(gca,colorcet(clm.t))
+clb = colorbar;
+clb.Label.String = ['T_i [',unt.t,']'];
+clb.Ruler.Exponent = clb_exp;
+clim(Ti_range_p)
+xline(mlon_rac_p,'r--')
+
+filename_prefix = char(gemini3d.datelab(time));
+suffix = 'difference';
+filename = fullfile(plotdirec,'plots',folder,[filename_prefix,'_',suffix,'.png']);
+saveas(gcf,filename)
+close all
+
+figure
+set(gcf,'PaperPosition',[0,0,6.5,4.5])
+tlo = tiledlayout(2,1);
+title(tlo,plot_title,'FontSize',fts,'FontName',ftn,'FontWeight','bold','Interpreter','none')
+
+nexttile
+pcolor(squeeze(MLAT(:,mlon_rid,:)),squeeze(ALT_p(:,mlon_rid,:)),squeeze(Ti_schunk_p(:,mlon_rid,:) - Ti_p(:,mlon_rid,:)))
+shading flat
+title(['Temp Difference (',num2str(mlon_rac_p),'°)'])
+xlabel(mlat_label)
+ylabel(alt_label)
+colormap(gca,colorcet(clm.t))
+clb = colorbar;
+clb.Label.String = ['T_i [',unt.t,']'];
+clb.Ruler.Exponent = clb_exp;
+%clim(Ti_range_p)
+yline(alt_rac_p,'r--')
+
+nexttile
+pcolor(squeeze(MLON(alt_rid,:,:)),squeeze(MLAT(alt_rid,:,:)),squeeze(Ti_schunk_p(alt_rid,:,:) - Ti_p(alt_rid,:,:)))
+shading flat
+title(['Temp Difference (',num2str(alt_rac_p),' ',unt.x,')'])
+xlabel(mlon_label)
+ylabel(mlat_label)
+colormap(gca,colorcet(clm.t))
+clb = colorbar;
+clb.Label.String = ['T_i [',unt.t,']'];
+clb.Ruler.Exponent = clb_exp;
+%clim(Ti_range_p)
+xline(mlon_rac_p,'r--')
+
+filename_prefix = char(gemini3d.datelab(time));
+suffix = 'difference_noscale';
+filename = fullfile(plotdirec,'plots',folder,[filename_prefix,'_',suffix,'.png']);
+saveas(gcf,filename)
+close all
+
+figure
+set(gcf,'PaperPosition',[0,0,6.5,4.5])
+tlo = tiledlayout(2,1);
+title(tlo,plot_title,'FontSize',fts,'FontName',ftn,'FontWeight','bold','Interpreter','none')
+
+nexttile
+pcolor(squeeze(MLAT(:,mlon_rid,:)),squeeze(ALT_p(:,mlon_rid,:)),100 .* squeeze((Ti_schunk_p(:,mlon_rid,:) - Ti_p(:,mlon_rid,:))./Ti_p(:,mlon_rid,:)))
+shading flat
+title(['Temp Difference (',num2str(mlon_rac_p),'°)'])
+xlabel(mlat_label)
+ylabel(alt_label)
+colormap(gca,colorcet(clm.n))
+clb = colorbar;
+clb.Label.String = ['% change'];
+clb.Ruler.Exponent = clb_exp;
+%clim(Ti_range_p)
+yline(alt_rac_p,'r--')
+
+nexttile
+pcolor(squeeze(MLON(alt_rid,:,:)),squeeze(MLAT(alt_rid,:,:)),100 * squeeze((Ti_schunk_p(alt_rid,:,:) - Ti_p(alt_rid,:,:))./Ti_p(alt_rid,:,:)))
+shading flat
+title(['Temp Difference (',num2str(alt_rac_p),' ',unt.x,')'])
+xlabel(mlon_label)
+ylabel(mlat_label)
+colormap(gca,colorcet(clm.n))
+clb = colorbar;
+clb.Label.String = ['% change'];
+clb.Ruler.Exponent = clb_exp;
+%clim(Ti_range_p)
+xline(mlon_rac_p,'r--')
+
+filename_prefix = char(gemini3d.datelab(time));
+suffix = 'difference_noscale_percent';
 filename = fullfile(plotdirec,'plots',folder,[filename_prefix,'_',suffix,'.png']);
 saveas(gcf,filename)
 close all
