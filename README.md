@@ -86,7 +86,10 @@ init
 aurogem.swop.setup(data_direc, event_id, swarm_id)
 ```
 where event_id is the id listed in the events.dat file, and swarm_id is A, B, or C. Once this is completed, a new directory will be generated in the simulation_directory defined during the init with a slurm.script formatted to be used on the Reaserch Computing Cluster at Dartmouth.
-
-This repository is for analyising temperature data outputs for the GEMINI3D model. It is assumed output hdf5 data has already been generated as described in the aurora gemini repository.
-
+To analyze the temperature data, return to the /phys118-final-project/analysis directory and 
+```sh
+matlab -nodisplay
+temp_plot(data_direc, plot_direc)
+```
+where data_direc points to the directory the simulation data is stored, and plot_direc is the directory you want the output plots saved to.
 
