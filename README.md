@@ -23,6 +23,10 @@ cmake --build build --parallel
 Aurora Gemini is a MATLAB/Python library designed to create GEMINI input files from ESA SWARM conjunctions with 3 color ground based imagery (This work used only the DASC found at Poker Flat Research Range). In order to generate data from a new conjunction, the first step install the GLOW model and asispectralinversion python library. This is done through 
 ```sh
 git clone https://github.com/317Lab/glow.git
+cd glow
+make -f make_invert_tables.v3
+make -f make_invert_airglow.v3
+cd ../
 git clone https://github.com/317Lab/asispectralinversion.git
 cd asispectralinversion/src
 pip install .
