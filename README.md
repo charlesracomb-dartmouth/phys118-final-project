@@ -94,4 +94,7 @@ matlab -nodisplay
 temp_plot(data_direc, plot_direc)
 ```
 where data_direc points to the directory the simulation data is stored, and plot_direc is the directory you want the output plots saved to.
-
+In addition, many other output pluts (such as currents, electric fields, density, etc) can be generated through
+```sh
+aurogem.sim.plot(data_direc)
+```
